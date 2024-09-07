@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Evento e Ingressos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #fafafa;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #3949ab;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro de Evento e Ingressos</h2>
+        <form action="/submit" method="POST" enctype="multipart/form-data">
+            <!-- Seção do Evento -->
+            <div class="form-group">
+                <label for="nome_evento">Nome do Evento:</label>
+                <input type="text" id="nome_evento" name="nome_evento" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="data_inicio">Data de Início:</label>
+                <input type="date" id="data_inicio" name="data_inicio" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="data_fim">Data de Fim:</label>
+                <input type="date" id="data_fim" name="data_fim" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="local">Local do Evento:</label>
+                <input type="text" id="local" name="local" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="descricao_evento">Descrição do Evento:</label>
+                <textarea id="descricao_evento" name="descricao_evento" required></textarea>
+            </div>
+        
+            <!-- Campo de Upload da Imagem -->
+            <div class="form-group">
+                <label for="imagem_evento">Imagem do Evento:</label>
+                <input type="file" id="imagem_evento" name="imagem_evento" accept="image/*" required>
+            </div>
+        
+            <!-- Seção dos Ingressos -->
+        
+            <div class="form-group">
+                <label for="quantidade_ingressos">Quantidade de Ingressos:</label>
+                <input type="number" id="quantidade_ingressos" name="quantidade_ingressos" min="1" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="preco_ingresso">Preço do Ingresso:</label>
+                <input type="number" id="preco_ingresso" name="preco_ingresso" step="0.01" min="0" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="categoria_ingresso">Categoria do Ingresso:</label>
+                <input type="text" id="categoria_ingresso" name="categoria_ingresso" required>
+            </div>
+        
+            <button type="submit">Cadastrar Evento e Ingressos</button>
+        </form>
+    </div>
+</body>
+</html>
