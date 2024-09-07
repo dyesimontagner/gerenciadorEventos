@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quantidade_ingressos = $_POST['quantidade_ingressos'];
     $preco_ingresso = $_POST['preco_ingresso'];
     $categoria_ingresso = $_POST['categoria_ingresso'];
-
+/*
     // Processa o upload da imagem
     if (isset($_FILES['imagem_evento'])) {
         $imagem_nome = $_FILES['imagem_evento']['name'];
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $imagem_tipo = $_FILES['imagem_evento']['type'];
 
         // Define o diretório de upload
-        $upload_dir = 'uploads/';
+        $upload_dir = 'assets/img';
         if (!file_exists($upload_dir)) {
             mkdir($upload_dir, 0777, true); // Cria o diretório se não existir
         }
@@ -45,18 +45,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "Tipo de imagem inválido. Permitido: jpg, jpeg, png, gif.";
         }
     }
+*/ 
 
-    // Aqui você pode inserir os dados no banco de dados e chamar a procedure
     // Exemplo de chamada à procedure (ajustar conforme sua necessidade):
-    $sql = "CALL add_evento(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "CALL SP_EVENTOIA(?, ?, ?, ?, ?, ?)";
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ssssssids", $nome_evento, $data_inicio, $data_fim, $local, $descricao_evento, $novo_nome_imagem, $quantidade_ingressos, $preco_ingresso, $categoria_ingresso);
+        // No caso de uma inserção, PID_EVENTO será 0
+        $pid_evento = 0;
+
+        $stmt->bind_param("isssss", 
+            $pid_evento,         // ID do evento (0 para inserção)
+            $nome_evento,        // Nome do evento
+            $data_inicio,        // Data de início
+            $data_fim,           // Data de fim
+            $local,              // Local do evento
+            $descricao_evento    // Descrição do evento
+        );
+
         if ($stmt->execute()) {
-            echo "Evento e ingressos cadastrados com sucesso!";
+            // Obtenha o ID do evento recém-inserido
+            $last_event_id = $conn->insert_id;
+
+            // Agora insira os dados dos ingressos relacionados ao evento
+            $sql_ingresso = "INSERT INTO INGRESSO (evento_id, quantidade, preco, categoria) VALUES (?, ?, ?, ?)";
+            if ($stmt_ingresso = $conn->prepare($sql_ingresso)) {
+                $stmt_ingresso->bind_param("iids", 
+                    $last_event_id,        // ID do evento (relacionado)
+                    $quantidade_ingressos, // Quantidade de ingressos
+                    $preco_ingresso,       // Preço do ingresso
+                    $categoria_ingresso    // Categoria do ingresso
+                );
+                if ($stmt_ingresso->execute()) {
+                    echo "Evento e ingressos cadastrados com sucesso!";
+                } else {
+                    echo "Erro ao cadastrar ingressos: " . $stmt_ingresso->error;
+                }
+            }
         } else {
             echo "Erro ao cadastrar evento: " . $stmt->error;
         }
+
         $stmt->close();
+    
     } else {
         echo "Erro na preparação da query: " . $conn->error;
     }
