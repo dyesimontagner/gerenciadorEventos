@@ -63,17 +63,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         );
 
         if ($stmt->execute()) {
-            // Obtenha o ID do evento recém-inserido
-            $last_event_id = $conn->insert_id;
+            //pega o último id do evento
+            $result = $conn->query("SELECT MAX(id_evento) AS id_evento FROM evento");
+            if ($result && $row = $result->fetch_assoc()) {
+                $last_evento_id = $row['id_evento'];
+            } else {
+                echo "Erro ao obter o ID do evento.";
+            }
 
-            // Agora insira os dados dos ingressos relacionados ao evento
-            $sql_ingresso = "INSERT INTO INGRESSO (evento_id, quantidade, preco, categoria) VALUES (?, ?, ?, ?)";
+            $sql_ingresso = "CALL SP_INGRESSOSIA(?, ?, ?, ?)";
+            //$sql_ingresso = "CALL SP_INGRESSOSIA(?, ?, ?, ?, ?)";
             if ($stmt_ingresso = $conn->prepare($sql_ingresso)) {
-                $stmt_ingresso->bind_param("iids", 
-                    $last_event_id,        // ID do evento (relacionado)
-                    $quantidade_ingressos, // Quantidade de ingressos
+                $pid_ingresso = 0;
+                //$stmt_ingresso->bind_param("iiids", 
+                $stmt_ingresso->bind_param("iids",
+                    $pid_ingresso,         // ID do ingresso (0 para inserção)
+                    $last_evento_id,        // ID do evento (relacionado)
                     $preco_ingresso,       // Preço do ingresso
-                    $categoria_ingresso    // Categoria do ingresso
+                    $categoria_ingresso,    // Categoria do ingresso
+                    //$quantidade_ingressos // Quantidade de ingressos
                 );
                 if ($stmt_ingresso->execute()) {
                     echo "Evento e ingressos cadastrados com sucesso!";
