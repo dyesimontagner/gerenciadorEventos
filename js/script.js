@@ -9,7 +9,7 @@ document.getElementById('formEvento').addEventListener('submit', function(event)
 
     let formData = new FormData(this);
 
-    fetch('php/processa_evento.php', {
+    fetch('php/processaEvento.php', {
         method: 'POST',
         body: formData
     })
