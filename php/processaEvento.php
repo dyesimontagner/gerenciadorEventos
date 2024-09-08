@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quantidade_ingressos = $_POST['quantidade_ingressos'];
     $preco_ingresso = $_POST['preco_ingresso'];
     $categoria_ingresso = $_POST['categoria_ingresso'];
+    $id_organizador = $_POST['id_organizador'];
 
     // Lê a imagem como binário se estiver presente
     $imagem = null;
@@ -22,16 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
     // Exemplo de chamada à procedure (ajustar conforme sua necessidade):
-    $sql = "CALL SP_EVENTOIA(?, ?, ?, ?, ?, ?, ?)";
+    $sql = "CALL SP_EVENTOIA(?, ?, ?, ?, ?, ?, ?, ?)";
     if ($stmt = $conn->prepare($sql)) {
         
-        $stmt->bind_param("isssssb", 
+        $stmt->bind_param("isssssib", 
             $pid_evento,         // ID do evento (0 para inserção)
             $nome_evento,        // Nome do evento
             $data_inicio,        // Data de início
             $data_fim,           // Data de fim
             $local,              // Local do evento
             $descricao_evento,    // Descrição do evento
+            $organizador,        // id do organizador
             $imagem  // Placeholder para imagem (definido como null)
        
         );
