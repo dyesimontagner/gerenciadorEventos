@@ -1,0 +1,126 @@
+/* Estilo geral para o container do perfil */
+.perfil-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para a seção da foto de perfil */
+.profile-photo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+/* Estilo para as informações do usuário */
+.user-info {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.user-info h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.user-info p {
+    margin: 8px 0;
+}
+
+/* Estilo para os botões de ação do usuário */
+.user-actions {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-actions button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s;
+}
+
+.user-actions button:hover {
+    background-color: #0056b3;
+}
+
+.user-actions button[style*="background-color: red;"] {
+    background-color: red;
+}
+
+.user-actions button[style*="background-color: red;"]:hover {
+    background-color: darkred;
+}
+
+/* Estilo para a tabela de eventos recentes */
+.user-purchases {
+    margin-bottom: 20px;
+}
+
+.user-purchases h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.user-purchases table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-purchases th, .user-purchases td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-purchases th {
+    background-color: #f4f4f4;
+}
+
+.event-img {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Estilo para o botão de comprar evento */
+.comprar-evento {
+    text-align: center;
+}
+
+.comprar-evento button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.comprar-evento button:hover {
+    background-color: #218838;
+}
