@@ -73,6 +73,7 @@
         <form action="/gerEventos/php/processaEvento.php" method="POST" enctype="multipart/form-data">
             <!-- Seção do Evento -->
             <input type="hidden" name="id_evento" value="<?php echo isset($evento['id_evento']) ? $evento['id_evento'] : 0; ?>">
+            <input type="hidden" name="id_organizador" value="<?php echo isset($organizador['id_organizador']) ? $evento['id_organizador'] : 0; ?>">
             <div class="form-group">
                 <label for="nome_evento">Nome do Evento:</label>
                 <input type="text" id="nome_evento" name="nome_evento" required>
