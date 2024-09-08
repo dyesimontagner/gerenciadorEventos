@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $preco_ingresso = $_POST['preco_ingresso'];
     $categoria_ingresso = $_POST['categoria_ingresso'];
     $id_organizador = $_POST['id_organizador'];
-
     // Lê a imagem como binário se estiver presente
     $imagem = null;
     if (isset($_FILES['imagem_evento']) && $_FILES['imagem_evento']['error'] === UPLOAD_ERR_OK) {
