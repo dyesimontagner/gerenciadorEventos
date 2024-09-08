@@ -15,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Prepara e executa a consulta para pegar as informações do usuário e da empresa
-$sql = "SELECT u.NOME, u.EMAIL, u.TELEFONE, u.DATA_NASCIMENTO,u.TIPO,  u.CPF_CNPJ, o.CNPJ_EMPRESA 
+$sql = "SELECT u.NOME, u.EMAIL, u.TELEFONE, u.DATA_NASCIMENTO, u.TIPO, u.CPF_CNPJ, o.CNPJ_EMPRESA 
         FROM usuario u 
         LEFT JOIN organizador o ON u.ID_USUARIO = o.ID_ORGANIZADOR
         WHERE u.ID_USUARIO = ?";
@@ -33,18 +33,25 @@ if ($result->num_rows > 0) {
     exit();
 }
 
+// Prepara e executa a consulta para pegar os eventos recentes
+$sql_events = "SELECT imagem, nome as nome_evento, data_inicio as data_evento, local ,descricao FROM evento WHERE lkorganizador = ? ORDER BY data_evento DESC";
+$stmt_events = $conexao->prepare($sql_events);
+$stmt_events->bind_param('i', $user_id);
+$stmt_events->execute();
+$result_events = $stmt_events->get_result();
+
 // Fecha a conexão
 $stmt->close();
+$stmt_events->close();
 $conexao->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do perfilOrganizador</title>
+    <title>Perfil do Organizador</title>
     <link rel="stylesheet" href="perfilOrganizador.css">
 </head>
 <body>
@@ -70,6 +77,7 @@ $conexao->close();
         <div class="user-actions">
             <button type="button" onclick="window.location.href='AlteracoesOrganizador.php'">Editar Informações</button>
             <button type="button" onclick="window.location.href='criar_evento.html'">Criar Evento</button>
+            <button type="button" onclick="window.location.href='eventos_organizador.php'">Relatório de Eventos</button>
             <button type="submit" name="deletar" style="background-color: red; color: white;">Excluir Conta</button>
         </div>
 
@@ -81,32 +89,30 @@ $conexao->close();
                         <th>Imagem</th>
                         <th>Evento</th>
                         <th>Data</th>
-                        <th>Valor</th>
-                        <th>Status</th>
+                        <th>Local</th>
+                        <th>Descrição</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><img src="imagem_evento1.jpg" alt="Imagem do evento 1" class="event-img"></td>
-                        <td>Show de Rock</td>
-                        <td>15/08/2023</td>
-                        <td>R$ 350,00</td>
-                        <td>Confirmado</td>
-                    </tr>
-                    <tr>
-                        <td><img src="imagem_evento2.jpg" alt="Imagem do evento 2" class="event-img"></td>
-                        <td>Festa de Aniversário</td>
-                        <td>05/07/2023</td>
-                        <td>R$ 500,00</td>
-                        <td>Pendente</td>
-                    </tr>
-                    <tr>
-                        <td><img src="imagem_evento3.jpg" alt="Imagem do evento 3" class="event-img"></td>
-                        <td>Workshop de Tecnologia</td>
-                        <td>25/06/2023</td>
-                        <td>R$ 200,00</td>
-                        <td>Cancelado</td>
-                    </tr>
+                    <?php
+                    // Verifica se há resultados e os exibe
+                    if ($result_events->num_rows > 0) {
+                        while ($row = $result_events->fetch_assoc()) {
+                            // Formata o valor
+                            // Formata a data no formato brasileiro
+                            $data_formatada = date('d/m/Y', strtotime($row['data_evento']));
+                            echo "<tr>";
+                            echo "<td><img src='" . htmlspecialchars($row['imagem']) . "' alt='Imagem do evento' class='event-img'></td>";
+                            echo "<td>" . htmlspecialchars($row['nome_evento']) . "</td>";
+                            echo "<td>" . $data_formatada . "</td>";
+                            echo "<td>" . htmlspecialchars($row['local']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='5'>Nenhum evento encontrado.</td></tr>";
+                    }
+                    ?>
                 </tbody>
             </table>
         </div>

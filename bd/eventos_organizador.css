@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8; /* Cor de fundo mais suave */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #2c3e50; /* Tom de azul mais escuro */
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.divider {
+    border: 1px solid #b0bec5; /* Tom de azul mais suave */
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #cfd8dc; /* Tom de azul mais suave para o fundo do cabeçalho */
+    color: #2c3e50; /* Cor do texto do cabeçalho em um tom de azul escuro */
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa; /* Cor de fundo das linhas pares mais suave */
+}
+
+/* Contêiner para os botões */
+.button-container {
+    display: flex; /* Usa Flexbox para alinhamento */
+    justify-content: center; /* Alinha os botões no centro */
+    gap: 10px; /* Espaçamento entre os botões */
+    margin-bottom: 20px; /* Margem inferior */
+}
+
+.print-btn {
+    background-color: #0668b9; /* Azul claro e suave */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.print-btn:hover {
+    background-color: #0f4e7d; /* Azul um pouco mais escuro no hover */
+}
+
+.back-btn {
+    background-color: #f57c00; /* Laranja */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.back-btn:hover {
+    background-color: #e76841; /* Laranja um pouco mais escuro no hover */
+}
+
+@media print {
+    @page {
+        size: landscape;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+
+
+
