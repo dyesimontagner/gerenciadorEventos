@@ -40,8 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Se houver uma imagem, envia os dados binários
         if ($imagem !== null) {
             try {
-                //$stmt->send_long_data(6, $imagem);
-                //$stmt->bind_param(6, $imagem, PDO::PARAM_LOB);
+                $stmt->send_long_data(6, $imagem);
             } catch (Exception $e) {
                 echo 'Erro: ' . $e->getMessage();
             }
@@ -52,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $result = $conn->query("SELECT MAX(id_evento) AS id_evento FROM evento");
             if ($result && $row = $result->fetch_assoc()) {
                 $last_evento_id = $row['id_evento'];
-                echo $last_evento_id;
             } else {
                 echo "Erro ao obter o ID do evento.";
             }
