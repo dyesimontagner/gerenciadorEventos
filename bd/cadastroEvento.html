@@ -66,14 +66,93 @@
             flex-direction: column;
         }
     </style>
+    <script>
+        // Função para carregar categorias
+        function carregarDados() {
+            fetch('buscarCategorias.php') // Faz a requisição para o arquivo PHP
+            .then(response => response.json()) // Converte a resposta para JSON
+            .then(data => {
+                // Carregar categorias
+                const select = document.getElementById('categoria_ingresso');
+                if (data.categorias.length > 0) {
+                    data.categorias.forEach(categoria => {
+                        const option = document.createElement('option');
+                        option.value = categoria.id_categoria;
+                        option.textContent = categoria.nome;
+                        select.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Nenhuma categoria encontrada';
+                    select.appendChild(option);
+                }
+    
+                // Definir o valor do campo oculto do organizador
+                const organizadorInput = document.getElementById('id_organizador');
+                if (data.organizador) {
+                    organizadorInput.value = data.organizador.id_organizador;
+                } else {
+                    organizadorInput.value = '0'; // Valor padrão caso o organizador não esteja presente
+                }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar as categorias:', error);
+                });
+        }
+
+        // Função para carregar dados do evento
+        function carregarEvento() {
+            const params = new URLSearchParams(window.location.search);
+            const eventoId = params.get('id');
+
+            if (eventoId) {
+                fetch(`buscarEvento.php?id=${eventoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        alert('Erro ao carregar evento.');
+                    } else {
+                        document.getElementById('id_evento').value = data.id_evento;
+                        document.getElementById('nome_evento').value = data.nome_evento;
+                        document.getElementById('data_inicio').value = data.data_inicio;
+                        document.getElementById('data_fim').value = data.data_fim;
+                        document.getElementById('local').value = data.local;
+                        document.getElementById('descricao_evento').value = data.descricao_evento;
+                        
+                        const imagemInput = document.getElementById('imagem_evento');
+                        const imgPreview = document.getElementById('img_preview');
+                        if (data.imagem_evento) {
+                            imgPreview.src = data.imagem_evento;
+                            imgPreview.style.display = 'block'; 
+                            imagemInput.required = false;
+                        } else {
+                            imgPreview.style.display = 'none'; 
+                            imagemInput.required = true; 
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os dados do evento:', error);
+                });
+            } else {
+                alert('ID do evento não especificado.');
+            }
+        }
+
+
+        // Carregar as categorias quando a página carregar
+        window.onload = carregarDados;
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>Cadastro de Evento e Ingressos</h2>
         <form action="processaEvento.php" method="POST" enctype="multipart/form-data">
             <!-- Seção do Evento -->
-            <input type="hidden" name="id_evento" value="<?php echo isset($evento['id_evento']) ? $evento['id_evento'] : 0; ?>">
-            <input type="hidden" name="id_organizador" value="<?php echo isset($organizador['id_organizador']) ? $evento['id_organizador'] : 0; ?>">
+            <input type="hidden" name="id_evento" value="">
+            <input type="hidden" id="id_organizador" name="id_organizador" value="">
             <div class="form-group">
                 <label for="nome_evento">Nome do Evento:</label>
                 <input type="text" id="nome_evento" name="nome_evento" required>
@@ -120,7 +199,9 @@
         
             <div class="form-group">
                 <label for="categoria_ingresso">Categoria do Ingresso:</label>
-                <input type="text" id="categoria_ingresso" name="categoria_ingresso" required>
+                <select id="categoria_ingresso" name="categoria_ingresso" required>
+                    <option value="">Carregando categorias...</option>
+                </select>
             </div>
         
             <button type="submit">Cadastrar Evento e Ingressos</button>

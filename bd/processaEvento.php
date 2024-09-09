@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Exemplo de chamada à procedure (ajustar conforme sua necessidade):
     $sql = "CALL SP_EVENTOIA(?, ?, ?, ?, ?, ?, ?, ?)";
-    if ($stmt = $conn->prepare($sql)) {
+    if ($stmt = $conexao->prepare($sql)) {
         
         $stmt->bind_param("isssssib", 
             $pid_evento,         // ID do evento (0 para inserção)
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         if ($stmt->execute()) {
             //pega o último id do evento
-            $result = $conn->query("SELECT MAX(id_evento) AS id_evento FROM evento");
+            $result = $conexao->query("SELECT MAX(id_evento) AS id_evento FROM evento");
             if ($result && $row = $result->fetch_assoc()) {
                 $last_evento_id = $row['id_evento'];
             } else {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $sql_ingresso = "CALL SP_INGRESSOSIA(?, ?, ?, ?, ?)";
-            if ($stmt_ingresso = $conn->prepare($sql_ingresso)) {
+            if ($stmt_ingresso = $conexao->prepare($sql_ingresso)) {
                 $pid_ingresso = 0;
                 $stmt_ingresso->bind_param("iidsi",
                     $pid_ingresso,         // ID do ingresso (0 para inserção)
@@ -79,9 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->close();
     
     } else {
-        echo "Erro na preparação da query: " . $conn->error;
+        echo "Erro na preparação da query: " . $conexao->error;
     }
 
-    $conn->close();
+    $conexao->close();
 }
 ?>
