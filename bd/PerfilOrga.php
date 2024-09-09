@@ -76,7 +76,7 @@ $conexao->close();
         <!-- Botões de Ação: Editar, Excluir e Criar Evento -->
         <div class="user-actions">
             <button type="button" onclick="window.location.href='AlteracoesOrganizador.php'">Editar Informações</button>
-            <button type="button" onclick="window.location.href='criar_evento.html'">Criar Evento</button>
+            <button type="button" onclick="window.location.href='cadastroEvento.html'">Criar Evento</button>
             <button type="button" onclick="window.location.href='eventos_organizador.php'">Relatório de Eventos</button>
             <button type="submit" name="deletar" style="background-color: red; color: white;">Excluir Conta</button>
         </div>

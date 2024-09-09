@@ -12,6 +12,6 @@
     if ($conexao->connect_error) {
         die("Houve um erro na conexão: " . $conexao->connect_error);
     } else {
-        echo "Conexão bem-sucedida!";
+        // echo "Conexão bem-sucedida!";
     }
 ?>
