@@ -34,7 +34,7 @@ if ($result->num_rows > 0) {
 }
 
 // Prepara e executa a consulta para pegar os eventos recentes
-$sql_events = "SELECT imagem, nome as nome_evento, data_inicio as data_evento, local ,descricao FROM evento WHERE lkorganizador = ? ORDER BY data_evento DESC";
+$sql_events = "SELECT id_evento, imagem, nome as nome_evento, data_inicio as data_evento, local ,descricao FROM evento WHERE lkorganizador = ? ORDER BY data_evento DESC";
 $stmt_events = $conexao->prepare($sql_events);
 $stmt_events->bind_param('i', $user_id);
 $stmt_events->execute();
@@ -91,6 +91,7 @@ $conexao->close();
                         <th>Data</th>
                         <th>Local</th>
                         <th>Descrição</th>
+                        <th>Ação</th> <!-- Nova coluna para ações -->
                     </tr>
                 </thead>
                 <tbody>
@@ -98,19 +99,19 @@ $conexao->close();
                     // Verifica se há resultados e os exibe
                     if ($result_events->num_rows > 0) {
                         while ($row = $result_events->fetch_assoc()) {
-                            // Formata o valor
                             // Formata a data no formato brasileiro
                             $data_formatada = date('d/m/Y', strtotime($row['data_evento']));
                             echo "<tr>";
-                            echo "<td><img src='" . htmlspecialchars($row['imagem']) . "' alt='Imagem do evento' class='event-img'></td>";
+                            echo "<td><img src='data:image/jpeg;base64," . base64_encode($row['imagem']) . "' alt='Imagem do evento' class='event-img'></td>";
                             echo "<td>" . htmlspecialchars($row['nome_evento']) . "</td>";
                             echo "<td>" . $data_formatada . "</td>";
                             echo "<td>" . htmlspecialchars($row['local']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
+                            echo "<td><button type='button' onclick=\"window.location.href='cadastroEvento.html?id=".htmlspecialchars($row['id_evento'])."'\">Editar</button></td>";
                             echo "</tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='5'>Nenhum evento encontrado.</td></tr>";
+                        echo "<tr><td colspan='6'>Nenhum evento encontrado.</td></tr>";
                     }
                     ?>
                 </tbody>
