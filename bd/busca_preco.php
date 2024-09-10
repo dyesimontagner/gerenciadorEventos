@@ -1,23 +1,25 @@
 <?php
-include 'conexao.php'; // Certifique-se de que a conexão com o banco de dados está correta
+include('conexao.php');
 
-// Query para buscar as formas de pagamento
-$sql = "SELECT id, descricao FROM frm_pagamento";
-$result = $conexao->query($sql);
+if (isset($_GET['id_evento'])) {
+    $id_evento = $_GET['id_evento'];
 
-$formas_pagamento = array(); // Array para armazenar as formas de pagamento
+    // Consulta para obter o preço do evento
+    $sql = "SELECT preco FROM eventos WHERE id_evento = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param('i', $id_evento);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    // Preencher o array com os resultados
-    while($row = $result->fetch_assoc()) {
-        $formas_pagamento[] = array('id' => $row['id'], 'descricao' => $row['descricao']);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        echo json_encode(['sucesso' => true, 'preco' => $row['preco']]);
+    } else {
+        echo json_encode(['sucesso' => false]);
     }
+
+    $stmt->close();
+    $conexao->close();
+} else {
+    echo json_encode(['sucesso' => false]);
 }
-
-// Retornar os dados em formato JSON
-header('Content-Type: application/json');
-echo json_encode($formas_pagamento);
-
-// Fechar a conexão
-$conexao->close();
-?>
