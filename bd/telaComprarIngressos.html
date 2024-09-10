@@ -66,7 +66,6 @@
             flex-direction: column;
         }
 
-        /* Adiciona um estilo simples para o spinner de carregamento */
         .loading-spinner {
             display: none;
             margin-top: 10px;
@@ -75,21 +74,24 @@
         }
     </style>
     <script>
-        // Função para buscar o preço do evento via AJAX
-        function buscarPrecoEvento() {
-            var evento = document.getElementById("evento").value;
+        // Função para carregar o evento e o preço automaticamente
+        function carregarEvento() {
+            // Obtém o id_evento da URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var idEvento = urlParams.get('id_evento');
 
-            // Mostra o spinner de carregamento
-            document.getElementById("loading-spinner").style.display = "block";
+            if (idEvento) {
+                // Preenche o campo evento com o ID
+                document.getElementById('evento').value = idEvento;
 
-            if (evento.length >= 3) {  // Só começa a buscar quando o nome do evento tiver 3 caracteres ou mais
+                // Requisição para buscar o preço com base no evento selecionado
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "buscar_preco.php?evento=" + encodeURIComponent(evento), true);
+                xhr.open("GET", "buscar_preco.php?id_evento=" + encodeURIComponent(idEvento), true);
                 xhr.onload = function () {
                     if (xhr.status === 200) {
                         var resposta = JSON.parse(xhr.responseText);
                         if (resposta.sucesso) {
-                            // Atualiza o campo de preço com o valor retornado
+                            // Preenche o campo preço com o valor obtido
                             document.getElementById("preco").value = resposta.preco;
                         } else {
                             document.getElementById("preco").value = "0.00";
@@ -97,17 +99,65 @@
                     } else {
                         alert("Erro ao buscar o preço do evento.");
                     }
-
-                    // Oculta o spinner de carregamento
-                    document.getElementById("loading-spinner").style.display = "none";
                 };
                 xhr.send();
-            } else {
-                // Limpa o campo de preço se o nome do evento for menor que 3 caracteres
-                document.getElementById("preco").value = "0.00";
-                document.getElementById("loading-spinner").style.display = "none";
             }
         }
+
+        // Função para carregar formas de pagamento
+        function carregarFormasPagamento() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "buscar_formas_pagamento.php", true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var formas = JSON.parse(xhr.responseText);
+                    var selectPagamento = document.getElementById("forma_pagamento");
+
+                    formas.forEach(function (forma) {
+                        var option = document.createElement("option");
+                        option.value = forma.id;
+                        option.text = forma.descricao;
+                        selectPagamento.appendChild(option);
+                    });
+                } else {
+                    alert("Erro ao carregar formas de pagamento.");
+                }
+            };
+            xhr.send();
+        }
+
+        // Função para verificar o cupom de desconto
+        function aplicarCupom() {
+            var cupom = document.getElementById("cupom").value;
+
+            if (cupom) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "buscar_cupom.php?cupom=" + encodeURIComponent(cupom), true);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var resposta = JSON.parse(xhr.responseText);
+                        if (resposta.sucesso) {
+                            var precoAtual = parseFloat(document.getElementById("preco").value);
+                            var desconto = resposta.desconto / 100;
+                            var novoPreco = precoAtual - (precoAtual * desconto);
+                            document.getElementById("preco").value = novoPreco.toFixed(2);
+                            alert("Cupom aplicado: " + resposta.desconto + "% de desconto.");
+                        } else {
+                            alert("Cupom inválido.");
+                        }
+                    } else {
+                        alert("Erro ao aplicar o cupom.");
+                    }
+                };
+                xhr.send();
+            }
+        }
+
+        // Carrega o evento, formas de pagamento e cupons ao carregar a página
+        window.onload = function() {
+            carregarEvento();
+            carregarFormasPagamento();
+        };
     </script>
 </head>
 <body>
@@ -120,11 +170,10 @@
                 <input type="text" id="nome" name="nome" required>
             </div>
 
-            <!-- Detalhes do Evento (Dinâmicos ou pré-preenchidos) -->
+            <!-- Evento (Preenchido automaticamente com o ID do evento) -->
             <div class="form-group">
                 <label for="evento">Evento:</label>
-                <input type="text" id="evento" name="evento" onkeyup="buscarPrecoEvento()" required>
-                <div id="loading-spinner" class="loading-spinner">Buscando preço...</div>
+                <input type="text" id="evento" name="evento" readonly>
             </div>
 
             <!-- Quantidade de Ingressos -->
@@ -133,18 +182,25 @@
                 <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
             </div>
 
-            <!-- Preço Unitário -->
+            <!-- Preço Unitário (Preenchido automaticamente com base no evento selecionado) -->
             <div class="form-group">
                 <label for="preco">Preço por Ingresso (R$):</label>
                 <input type="number" id="preco" name="preco" value="0.00" readonly>
+            </div>
+
+            <!-- Campo para Cupom de Desconto -->
+            <div class="form-group">
+                <label for="cupom">Cupom de Desconto:</label>
+                <input type="text" id="cupom" name="cupom">
+                <button type="button" onclick="aplicarCupom()">Aplicar Cupom</button>
             </div>
 
             <!-- Forma de Pagamento -->
             <div class="form-group">
                 <label for="forma_pagamento">Forma de Pagamento:</label>
                 <select id="forma_pagamento" name="forma_pagamento" required>
-                    <option value="Pix">Pix</option>
-                    <option value="Boleto">Boleto</option>
+                    <option value="">Selecione uma forma de pagamento</option>
+                    <!-- Opções serão carregadas dinamicamente -->
                 </select>
             </div>
 
