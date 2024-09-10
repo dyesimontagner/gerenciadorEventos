@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra de Ingressos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #fafafa;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #3949ab;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Adiciona um estilo simples para o spinner de carregamento */
+        .loading-spinner {
+            display: none;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+    <script>
+        // Função para buscar o preço do evento via AJAX
+        function buscarPrecoEvento() {
+            var evento = document.getElementById("evento").value;
+
+            // Mostra o spinner de carregamento
+            document.getElementById("loading-spinner").style.display = "block";
+
+            if (evento.length >= 3) {  // Só começa a buscar quando o nome do evento tiver 3 caracteres ou mais
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "buscar_preco.php?evento=" + encodeURIComponent(evento), true);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var resposta = JSON.parse(xhr.responseText);
+                        if (resposta.sucesso) {
+                            // Atualiza o campo de preço com o valor retornado
+                            document.getElementById("preco").value = resposta.preco;
+                        } else {
+                            document.getElementById("preco").value = "0.00";
+                        }
+                    } else {
+                        alert("Erro ao buscar o preço do evento.");
+                    }
+
+                    // Oculta o spinner de carregamento
+                    document.getElementById("loading-spinner").style.display = "none";
+                };
+                xhr.send();
+            } else {
+                // Limpa o campo de preço se o nome do evento for menor que 3 caracteres
+                document.getElementById("preco").value = "0.00";
+                document.getElementById("loading-spinner").style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Compra de Ingressos</h2>
+        <form action="processa-compra.php" method="POST">
+            <!-- Nome do Comprador -->
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <!-- Detalhes do Evento (Dinâmicos ou pré-preenchidos) -->
+            <div class="form-group">
+                <label for="evento">Evento:</label>
+                <input type="text" id="evento" name="evento" onkeyup="buscarPrecoEvento()" required>
+                <div id="loading-spinner" class="loading-spinner">Buscando preço...</div>
+            </div>
+
+            <!-- Quantidade de Ingressos -->
+            <div class="form-group">
+                <label for="quantidade">Quantidade de Ingressos:</label>
+                <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
+            </div>
+
+            <!-- Preço Unitário -->
+            <div class="form-group">
+                <label for="preco">Preço por Ingresso (R$):</label>
+                <input type="number" id="preco" name="preco" value="0.00" readonly>
+            </div>
+
+            <!-- Forma de Pagamento -->
+            <div class="form-group">
+                <label for="forma_pagamento">Forma de Pagamento:</label>
+                <select id="forma_pagamento" name="forma_pagamento" required>
+                    <option value="Pix">Pix</option>
+                    <option value="Boleto">Boleto</option>
+                </select>
+            </div>
+
+            <button type="submit">Comprar</button>
+        </form>
+    </div>
+</body>
+</html>

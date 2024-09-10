@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingressos Comprados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #555;
+        }
+
+        td {
+            background-color: #fafafa;
+        }
+
+        .no-ingressos {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: #3949ab;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ingressos Comprados</h2>
+
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Compra</th>
+                    <th>Ingresso</th>
+                    <th>Quantidade</th>
+                    <th>Valor Total</th>
+                    <th>Data da Compra</th>
+                </tr>
+            </thead>
+            <tbody>
+                    
+                <tr>
+                    <td><?php echo $row['id_compra']; ?></td>
+                    <td><?php echo $row['nome_ingresso']; ?></td>
+                     <td><?php echo $row['quantidade']; ?></td>
+                            
+                    <td><?php echo date("d/m/Y", strtotime($row['data_compra'])); ?></td>
+
+                </tr>
+                    
+            </tbody>
+        </table>
+        <?php else: ?>
+            <p class="no-ingressos">Nenhuma compra encontrada</p>
+        <?php endif; ?>
+
+        <a href="index.html" class="back-button">Voltar ao Início</a>
+    </div>
+</body>
+</html>
+
+
