@@ -119,7 +119,7 @@ $conexao->close();
 
         <!-- Botão Comprar Evento -->
         <div class="comprar-evento">
-            <button type="button" onclick="window.location.href='comprar_evento.html'">Comprar Evento</button>
+            <button type="button" onclick="window.location.href='todosOsEventos.html'">Comprar Evento</button>
         </div>
     </div>
 </body>

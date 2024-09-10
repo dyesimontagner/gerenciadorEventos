@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Disponíveis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .event-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .event-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            width: 300px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-item img {
+            width: 100%;
+            height: auto;
+        }
+
+        .event-info {
+            padding: 15px;
+        }
+
+        .event-info h3 {
+            margin-top: 0;
+        }
+
+        .button-group {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+
+        .button-group button:hover {
+            background-color: #3949ab;
+        }
+    </style>
+    <script>
+        function carregarEventos() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "carregarTodosEventos.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var resposta = JSON.parse(xhr.responseText);
+                    var eventos = resposta.eventos;
+
+                    var container = document.getElementById('eventos-container');
+                    container.innerHTML = '';
+
+                    eventos.forEach(function(evento) {
+                        var eventoDiv = document.createElement('div');
+                        eventoDiv.className = 'event-item';
+
+                        eventoDiv.innerHTML = `
+                            <img src="data:image/jpeg;base64,${evento.IMAGEM}" alt="${evento.NOME}">
+                            <div class="event-info">
+                                <h3>${evento.NOME}</h3>
+                                <p><strong>Data de Início:</strong> ${evento.DATA_INICIO}</p>
+                                <p><strong>Data de Fim:</strong> ${evento.DATA_FIM}</p>
+                                <p><strong>Local:</strong> ${evento.LOCAL}</p>
+                                <p><strong>Descrição:</strong> ${evento.DESCRICAO}</p>
+                                <div class="button-group">
+                                    <a href="comprarIngressos.php?id_evento=${evento.ID_EVENTO}" class="button-group">Comprar Ingressos</a>
+                                </div>
+                            </div>
+                        `;
+
+                        container.appendChild(eventoDiv);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        window.onload = carregarEventos;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Eventos Disponíveis</h2>
+        <div id="eventos-container" class="event-list">
+            <!-- Eventos serão carregados aqui -->
+        </div>
+    </div>
+
+    
+</body>
+</html>
