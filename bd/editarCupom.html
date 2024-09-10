@@ -103,7 +103,8 @@
                         document.getElementById('codigo').value = cupom.CODIGO;
                         document.getElementById('desconto').value = cupom.DESCONTO;
                         document.getElementById('validade').value = cupom.VALIDADE;
-                        document.getElementById('restantes').innerText = cupom.RESTANTES; // Atualiza os cupons restantes
+                        document.getElementById('quant').value = cupom.QUANTIDADE;
+                        document.getElementById('restantes').innerText = cupom.RESTANTES; 
                     } else {
                         alert("Erro ao carregar os dados do cupom.");
                     }

@@ -1,14 +1,13 @@
 <?php
 include('conexao.php');
 
-if (isset($_GET['id_cupom'])) {
-    $id_cupom = $_GET['id_cupom'];
+if (isset($_GET['id_evento'])) {
+    $id_evento = $_GET['id_evento'];
 
     // Consulta para buscar os dados do cupom
-    $sql = "SELECT ID_CUPOM, CODIGO, DESCONTO, VALIDADE, RESTANTES FROM cupom_desconto WHERE ID_CUPOM = ?";
-    
+    $sql = "SELECT ID_CUPOM, CODIGO, DESCONTO, VALIDADE,QUANT, RESTANTES FROM cupom_desconto WHERE LKEVENTO = ?";
     if ($stmt = $conexao->prepare($sql)) {
-        $stmt->bind_param("i", $id_cupom);
+        $stmt->bind_param("i", $id_evento);
         $stmt->execute();
         $result = $stmt->get_result();
 

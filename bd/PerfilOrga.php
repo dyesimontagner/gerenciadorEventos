@@ -91,7 +91,8 @@ $conexao->close();
                         <th>Data</th>
                         <th>Local</th>
                         <th>Descrição</th>
-                        <th>Ação</th> <!-- Nova coluna para ações -->
+                        <th>Cupom de Desconto</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,6 +108,7 @@ $conexao->close();
                             echo "<td>" . $data_formatada . "</td>";
                             echo "<td>" . htmlspecialchars($row['local']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['descricao']) . "</td>";
+                            echo "<td><button type='button' onclick=\"window.location.href='editarCupom.html?id_evento=" . htmlspecialchars($row['id_evento']) . "'\">Cupom de Desconto</button></td>";
                             echo "<td><button type='button' onclick=\"window.location.href='cadastroEvento.html?id=".htmlspecialchars($row['id_evento'])."'\">Editar</button></td>";
                             echo "</tr>";
                         }
