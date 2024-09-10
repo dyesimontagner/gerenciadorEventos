@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Se houver uma imagem, envia os dados binários
         if ($imagem !== null) {
             try {
-                $stmt->send_long_data(6, $imagem);
+                $stmt->send_long_data(7, $imagem);
             } catch (Exception $e) {
                 echo 'Erro: ' . $e->getMessage();
             }

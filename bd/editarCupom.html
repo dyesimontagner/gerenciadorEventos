@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cupom de Desconto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #fafafa;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #3949ab;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-restantes {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #555;
+        }
+    </style>
+
+    <script>
+        function descontinuarCupom(idCupom) {
+            if (confirm('Tem certeza que deseja descontinuar o cupom?')) {
+                // Faz uma requisição AJAX para zerar os cupons restantes
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "descontinuarCupom.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        alert(xhr.responseText); // Mostra a resposta do PHP
+                        location.reload(); // Recarrega a página após a descontinuação
+                    }
+                };
+                xhr.send("id_cupom=" + idCupom);
+            }
+        }
+
+        function carregarCupom(idCupom) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "carregarCupom.php?id_cupom=" + idCupom, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var cupom = JSON.parse(xhr.responseText);
+
+                    if (cupom) {
+                        document.getElementById('id_cupom').value = cupom.ID_CUPOM;
+                        document.getElementById('codigo').value = cupom.CODIGO;
+                        document.getElementById('desconto').value = cupom.DESCONTO;
+                        document.getElementById('validade').value = cupom.VALIDADE;
+                        document.getElementById('restantes').innerText = cupom.RESTANTES; // Atualiza os cupons restantes
+                    } else {
+                        alert("Erro ao carregar os dados do cupom.");
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Carregar cupom ao carregar a página
+        window.onload = function() {
+            var idCupom = 1; // Substitua isso pelo ID dinâmico que você quiser carregar
+            carregarCupom(idCupom);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Editar Cupom de Desconto</h2>
+        <form action="processaCupom.php" method="POST">
+            <!-- Campo oculto para o ID do cupom -->
+            <input type="hidden" id="id_cupom" name="id_cupom">
+
+            <div class="form-group">
+                <label for="codigo">Código do Cupom:</label>
+                <input type="text" id="codigo" name="codigo" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="desconto">Desconto (%):</label>
+                <input type="number" id="desconto" name="desconto" value="" min="0" max="100">
+            </div>
+
+            <div class="form-group">
+                <label for="validade">Validade:</label>
+                <input type="date" id="validade" name="validade" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quant">Adicionar cupons:</label>
+                <input type="number" id="quant" name="quant">
+            </div>
+
+            <div class="form-group">
+                <label for="retirar">Retirar cupons:</label>
+                <input type="number" id="retirar" name="retirar">
+            </div>
+
+            <!-- Exibir quantidade de cupons restantes -->
+            <div class="info-restantes">
+                Cupons Restantes: <span id="restantes"></span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit">Atualizar Cupom</button>
+                <button type="button" onclick="descontinuarCupom(document.getElementById('id_cupom').value)">Descontinuar Cupom</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
