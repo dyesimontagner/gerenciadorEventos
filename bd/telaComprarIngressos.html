@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compra de Ingressos</title>
     <style>
+        /* Seus estilos existentes */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -95,6 +96,29 @@
             font-size: 14px;
             color: #888;
         }
+
+        #codigo_pix_container {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            width: 48%;
+        }
+        
+        .button-back {
+            background-color: #ff7043; /* Cor laranja */
+        }
+        
+        .button-back:hover {
+            background-color: #ff5722; /* Cor laranja escura */
+        }
     </style>
     <script>
         function carregarEvento() {
@@ -121,39 +145,40 @@
                 xhr.send();
             }
         }
-        function carregarFormasPagamento() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "buscar_formas_pagamento.php", true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            try {
-                var formas = JSON.parse(xhr.responseText);
-                if (formas && formas.length > 0) {
-                    var selectPagamento = document.getElementById("forma_pagamento");
 
-                    formas.forEach(function (forma) {
-                        var option = document.createElement("option");
-                        option.value = forma.ID_FRMPAGAMENTO;
-                        option.text = forma.descricao;
-                        selectPagamento.appendChild(option);
-                    });
+        function carregarFormasPagamento() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "buscar_formas_pagamento.php", true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    try {
+                        var formas = JSON.parse(xhr.responseText);
+                        if (formas && formas.length > 0) {
+                            var selectPagamento = document.getElementById("forma_pagamento");
+
+                            formas.forEach(function (forma) {
+                                var option = document.createElement("option");
+                                option.value = forma.ID_FRMPAGAMENTO;
+                                option.text = forma.descricao;
+                                selectPagamento.appendChild(option);
+                            });
+                        } else {
+                            alert("Nenhuma forma de pagamento encontrada.");
+                        }
+                    } catch (e) {
+                        console.error("Erro ao processar o JSON: ", e);
+                        console.log("Resposta recebida: " + xhr.responseText);
+                        alert("Erro ao carregar as formas de pagamento.");
+                    }
                 } else {
-                    alert("Nenhuma forma de pagamento encontrada.");
+                    alert("Erro ao carregar formas de pagamento. Status: " + xhr.status);
                 }
-            } catch (e) {
-                console.error("Erro ao processar o JSON: ", e);
-                console.log("Resposta recebida: " + xhr.responseText);
-                alert("Erro ao carregar as formas de pagamento.");
-            }
-        } else {
-            alert("Erro ao carregar formas de pagamento. Status: " + xhr.status);
+            };
+            xhr.onerror = function () {
+                alert("Erro na conexão ao carregar formas de pagamento.");
+            };
+            xhr.send();
         }
-    };
-    xhr.onerror = function () {
-        alert("Erro na conexão ao carregar formas de pagamento.");
-    };
-    xhr.send();
-}
 
         function aplicarCupom() {
             var cupom = document.getElementById("cupom").value;
@@ -181,16 +206,70 @@
             }
         }
 
+        function validarCompra(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            var formaPagamento = document.getElementById("forma_pagamento").value;
+            var descricaoPagamento = document.getElementById("forma_pagamento").options[document.getElementById("forma_pagamento").selectedIndex].text;
+
+            if (descricaoPagamento.toLowerCase() === "boleto") {
+                // Chama a função para exibir impressão (ajuste conforme sua implementação)
+                exibirImpressao();
+            } else if (descricaoPagamento.toLowerCase() === "pix") {
+                // Gerar código Pix e exibir na tela
+                gerarCodigoPix();
+            }
+        }
+
+        function gerarCodigoPix() {
+            // Simulação de geração de código Pix
+            var codigoPix = "PIX-" + Math.random().toString(36).substr(2, 12).toUpperCase(); // Gera um código aleatório
+            document.getElementById("codigo_pix").value = codigoPix;
+            document.getElementById("codigo_pix_container").style.display = "block";
+        }
+
+        function copiarCodigoPix() {
+            var codigoPix = document.getElementById("codigo_pix");
+            codigoPix.select();
+            document.execCommand("copy");
+            alert("Código Pix copiado para a área de transferência!");
+        }
+        function exibirImpressao() {
+            var formaPagamento = document.getElementById("forma_pagamento").selectedOptions[0].text;
+            if (formaPagamento.toLowerCase() === 'boleto') {
+                var nomeOrganizador = document.getElementById('nome').value;
+                var valor = document.getElementById('preco').value;
+                var hoje = new Date().toISOString().split('T')[0]; 
+                var evento = document.getElementById('evento').value;
+                var url = "gerar_boleto.php?" +
+                        "nome=" + encodeURIComponent(nomeOrganizador) + "&" +
+                        "valor=" + encodeURIComponent(valor) + "&" +
+                        "vencimento=" + encodeURIComponent(hoje);
+                
+                // Teste a URL gerada
+                console.log("URL gerada:", url);
+                
+                window.location.href = url;
+            } else if (formaPagamento.toLowerCase() === 'pix') {
+                // Gerar e exibir código PIX
+                var codigoPix = "PIX-" + Math.random().toString(36).substring(2, 15).toUpperCase();
+                document.getElementById('codigo-pix').textContent = codigoPix;
+                document.getElementById('codigo-pix').style.display = 'block';
+            }
+        }
+
+
         window.onload = function() {
             carregarEvento();
             carregarFormasPagamento();
+            document.getElementById("compraForm").addEventListener("submit", validarCompra);
         };
     </script>
 </head>
 <body>
     <div class="container">
         <h2>Compra de Ingressos</h2>
-        <form action="processa-compra.php" method="POST">
+        <form id="compraForm" action="processa-compra.php" method="POST">
             <div class="form-group-inline">
                 <div class="form-group input-large">
                     <label for="nome">Nome do Organizador:</label>
@@ -229,7 +308,17 @@
                 </select>
             </div>
 
-            <button type="submit">Comprar</button>
+            <div id="codigo_pix_container">
+                <label>Código Pix:</label>
+                <input type="text" id="codigo_pix" readonly>
+                <button type="button" onclick="copiarCodigoPix()">Copiar Código</button>
+            </div>
+
+            <div class="button-container">
+                <button type="button" class="button-back" onclick="window.history.back()">Voltar</button>
+                <button type="submit">Comprar</button>
+             
+            </div>
         </form>
     </div>
 </body>
