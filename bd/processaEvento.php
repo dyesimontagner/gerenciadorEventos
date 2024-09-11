@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $quantidade_ingressos // Quantidade de ingressos
                 );
                 if ($stmt_ingresso->execute()) {
-                    echo "Evento e ingressos cadastrados com sucesso!";
+                    header("Location: http://localhost/gerEventos/bd/PerfilOrga.php?mensagem=" . urlencode($mensagem));
                 } else {
                     echo "Erro ao cadastrar ingressos: " . $stmt_ingresso->error;
                 }
