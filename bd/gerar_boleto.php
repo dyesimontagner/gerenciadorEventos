@@ -4,7 +4,15 @@ require '../libs/vendor/autoload.php';
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
+// echo "<pre>";
+// print_r($_GET);
+// echo "</pre>";
+// exit;
+// Pega os parâmetros da URL
+$nomeOrganizador = isset($_GET['nome']) ? $_GET['nome'] : 'Organizadora do Evento';
+$valor = isset($_GET['valor']) ? $_GET['valor'] : '0.00';
+$vencimento = isset($_GET['vencimento']) ? $_GET['vencimento'] : date('Y-m-d');
+$evento = isset($_GET['evento']) ? $_GET['evento'] : 'exemplo de evento';
 // Instanciar o gerador de código de barras
 try {
     $generator = new BarcodeGeneratorPNG();
@@ -24,7 +32,7 @@ function imageToBase64($filePath) {
 }
 
 // Caminho para a imagem do logo
-$logoPath = __DIR__ . '/../imagens/logo.jpg'; // Caminho correto para a pasta imagens
+$logoPath = __DIR__ . '/../imagens/logo.jpg'; 
 $logoBase64 = imageToBase64($logoPath);
 if (!$logoBase64) {
     die('Não foi possível carregar a imagem do logo. Caminho: ' . $logoPath);
@@ -38,7 +46,7 @@ $options->set('isRemoteEnabled', true);
 
 $dompdf = new Dompdf($options);
 
-// Criar o conteúdo HTML com a imagem do código de barras e o logo do banco
+
 $html = "
 <!DOCTYPE html>
 <html>
@@ -125,7 +133,7 @@ $html = "
         <table class='info-table'>
             <tr>
                 <td class='label'>Beneficiário:</td>
-                <td class='value'>Organizadora do Evento</td>
+                <td class='value'>$nomeOrganizador</td>
             </tr>
             <tr>
                 <td class='label'>Agência/Código do Beneficiário:</td>
@@ -133,7 +141,7 @@ $html = "
             </tr>
             <tr>
                 <td class='label'>Data de Vencimento:</td>
-                <td class='value'>10/09/2024</td>
+                <td class='value'>" . date('d/m/Y', strtotime($vencimento)) . "</td>
             </tr>
             <tr>
                 <td class='label'>Nosso Número:</td>
@@ -141,8 +149,8 @@ $html = "
             </tr>
         </table>
         <div class='info'>
-            <p><strong>Nome do Evento:</strong> Exemplo de Evento</p>
-            <p><strong>Valor:</strong> R$ 100,00</p>
+             <p><strong>Nome do Evento:</strong> $evento</p>
+            <p><strong>Valor:</strong> R$ $valor</p>
         </div>
         <div class='codigo-barras'>
             <img src='data:image/png;base64, $barcodeBase64' alt='Código de Barras'>
