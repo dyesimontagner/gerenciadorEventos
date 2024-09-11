@@ -3,8 +3,10 @@ session_start();
 include('conexao.php');
 
 // Verifica se o usuário está logado
-if (!isset($_SESSION['id_usuario'])) {
-    die("Você precisa estar logado para comprar ingressos.");
+if (!isset($_SESSION['user_id'])) {
+    // Se não estiver logado, redireciona para o login
+    header('Location: login.php');
+    exit();
 }
 
 // Processa a compra do ingresso quando o formulário é enviado

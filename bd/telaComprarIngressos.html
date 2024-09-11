@@ -30,40 +30,63 @@
         form {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"], input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            background-color: #fafafa;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #5c6bc0;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        button:hover {
-            background-color: #3949ab;
+            gap: 15px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group-inline > div {
+            flex: 1;
+        }
+
+        .form-group-inline .input-small {
+            flex: 1;
+        }
+
+        .form-group-inline .input-medium {
+            flex: 1.5;
+        }
+
+        .form-group-inline .input-large {
+            flex: 3;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: #fafafa;
+        }
+
+        button {
+            padding: 8px 15px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background-color: #3949ab;
         }
 
         .loading-spinner {
@@ -74,59 +97,64 @@
         }
     </style>
     <script>
-        // Função para carregar o evento e o preço automaticamente
         function carregarEvento() {
-            // Obtém o id_evento da URL
             var urlParams = new URLSearchParams(window.location.search);
             var idEvento = urlParams.get('id_evento');
 
             if (idEvento) {
-                // Preenche o campo evento com o ID
-                document.getElementById('evento').value = idEvento;
-
-                // Requisição para buscar o preço com base no evento selecionado
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "buscar_preco.php?id_evento=" + encodeURIComponent(idEvento), true);
+                xhr.open("GET", "busca_preco.php?id_evento=" + encodeURIComponent(idEvento), true);
                 xhr.onload = function () {
                     if (xhr.status === 200) {
                         var resposta = JSON.parse(xhr.responseText);
                         if (resposta.sucesso) {
-                            // Preenche o campo preço com o valor obtido
+                            document.getElementById('evento').value = idEvento + " - " + resposta.nome_evento;
                             document.getElementById("preco").value = resposta.preco;
+                            document.getElementById('nome').value = resposta.nome_org;
                         } else {
                             document.getElementById("preco").value = "0.00";
                         }
                     } else {
-                        alert("Erro ao buscar o preço do evento.");
+                        alert("Erro ao buscar o evento.");
                     }
                 };
                 xhr.send();
             }
         }
-
-        // Função para carregar formas de pagamento
         function carregarFormasPagamento() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "buscar_formas_pagamento.php", true);
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    var formas = JSON.parse(xhr.responseText);
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "buscar_formas_pagamento.php", true);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            try {
+                var formas = JSON.parse(xhr.responseText);
+                if (formas && formas.length > 0) {
                     var selectPagamento = document.getElementById("forma_pagamento");
 
                     formas.forEach(function (forma) {
                         var option = document.createElement("option");
-                        option.value = forma.id;
+                        option.value = forma.ID_FRMPAGAMENTO;
                         option.text = forma.descricao;
                         selectPagamento.appendChild(option);
                     });
                 } else {
-                    alert("Erro ao carregar formas de pagamento.");
+                    alert("Nenhuma forma de pagamento encontrada.");
                 }
-            };
-            xhr.send();
+            } catch (e) {
+                console.error("Erro ao processar o JSON: ", e);
+                console.log("Resposta recebida: " + xhr.responseText);
+                alert("Erro ao carregar as formas de pagamento.");
+            }
+        } else {
+            alert("Erro ao carregar formas de pagamento. Status: " + xhr.status);
         }
+    };
+    xhr.onerror = function () {
+        alert("Erro na conexão ao carregar formas de pagamento.");
+    };
+    xhr.send();
+}
 
-        // Função para verificar o cupom de desconto
         function aplicarCupom() {
             var cupom = document.getElementById("cupom").value;
 
@@ -153,7 +181,6 @@
             }
         }
 
-        // Carrega o evento, formas de pagamento e cupons ao carregar a página
         window.onload = function() {
             carregarEvento();
             carregarFormasPagamento();
@@ -164,38 +191,36 @@
     <div class="container">
         <h2>Compra de Ingressos</h2>
         <form action="processa-compra.php" method="POST">
-            <!-- Nome do Comprador -->
-            <div class="form-group">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" required>
+            <div class="form-group-inline">
+                <div class="form-group input-large">
+                    <label for="nome">Nome do Organizador:</label>
+                    <input type="text" id="nome" name="nome" readonly>
+                </div>
+                <div class="form-group input-large">
+                    <label for="evento">Evento:</label>
+                    <input type="text" id="evento" name="evento" readonly>
+                </div>
+                <div class="form-group input-small">
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
+                </div>
             </div>
 
-            <!-- Evento (Preenchido automaticamente com o ID do evento) -->
-            <div class="form-group">
-                <label for="evento">Evento:</label>
-                <input type="text" id="evento" name="evento" readonly>
+            <div class="form-group-inline">
+                <div class="form-group input-small">
+                    <label for="preco">Preço por Ingresso (R$):</label>
+                    <input type="number" id="preco" name="preco" value="0.00" readonly>
+                </div>
+
+                <div class="form-group input-large">
+                    <label for="cupom">Cupom de Desconto:</label>
+                    <div class="form-group-inline">
+                        <input type="text" id="cupom" name="cupom" class="input-small">
+                        <button type="button" onclick="aplicarCupom()">Aplicar Cupom</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Quantidade de Ingressos -->
-            <div class="form-group">
-                <label for="quantidade">Quantidade de Ingressos:</label>
-                <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
-            </div>
-
-            <!-- Preço Unitário (Preenchido automaticamente com base no evento selecionado) -->
-            <div class="form-group">
-                <label for="preco">Preço por Ingresso (R$):</label>
-                <input type="number" id="preco" name="preco" value="0.00" readonly>
-            </div>
-
-            <!-- Campo para Cupom de Desconto -->
-            <div class="form-group">
-                <label for="cupom">Cupom de Desconto:</label>
-                <input type="text" id="cupom" name="cupom">
-                <button type="button" onclick="aplicarCupom()">Aplicar Cupom</button>
-            </div>
-
-            <!-- Forma de Pagamento -->
             <div class="form-group">
                 <label for="forma_pagamento">Forma de Pagamento:</label>
                 <select id="forma_pagamento" name="forma_pagamento" required>
