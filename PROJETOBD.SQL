@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
--- Servidor:                     127.0.0.1
--- Versão do servidor:           5.6.31 - MySQL Community Server (GPL)
+-- Servidor:                     localhost
+-- Versão do servidor:           10.4.32-MariaDB - mariadb.org binary distribution
 -- OS do Servidor:               Win64
 -- HeidiSQL Versão:              11.0.0.5919
 -- --------------------------------------------------------
@@ -14,7 +14,7 @@
 
 -- Copiando estrutura do banco de dados para projetobd
 DROP DATABASE IF EXISTS `projetobd`;
-CREATE DATABASE IF NOT EXISTS `projetobd` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE IF NOT EXISTS `projetobd` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci */;
 USE `projetobd`;
 
 -- Copiando estrutura para tabela projetobd.categorias
@@ -23,9 +23,18 @@ CREATE TABLE IF NOT EXISTS `categorias` (
   `ID_CATEGORIA` int(11) NOT NULL AUTO_INCREMENT,
   `NOME` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`ID_CATEGORIA`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.categorias: ~1 rows (aproximadamente)
+DELETE FROM `categorias`;
+/*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
+INSERT INTO `categorias` (`ID_CATEGORIA`, `NOME`) VALUES
+	(1, 'Categoria A'),
+	(2, 'Categoria B'),
+	(3, 'Categoria C'),
+	(4, 'Categoria D'),
+	(5, 'Categoria E');
+/*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.compra
 DROP TABLE IF EXISTS `compra`;
@@ -41,9 +50,18 @@ CREATE TABLE IF NOT EXISTS `compra` (
   KEY `FK_COMPRA_INGRESSO` (`LKINGRESSO`),
   CONSTRAINT `FK_COMPRA_INGRESSO` FOREIGN KEY (`LKINGRESSO`) REFERENCES `ingressos` (`ID_INGRESSO`),
   CONSTRAINT `FK_COMPRA_USUARIO` FOREIGN KEY (`LKUSUARIO`) REFERENCES `usuario` (`ID_USUARIO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.compra: ~1 rows (aproximadamente)
+DELETE FROM `compra`;
+/*!40000 ALTER TABLE `compra` DISABLE KEYS */;
+INSERT INTO `compra` (`ID_COMPRA`, `LKUSUARIO`, `LKINGRESSO`, `VALOR_TOTAL`, `DATA_COMPRA`, `QUANT`) VALUES
+	(1, 1, 1, 40.000000, '2024-09-08', 2),
+	(2, 2, 2, 30.000000, '2024-09-09', 1),
+	(3, 3, 1, 60.000000, '2024-09-10', 3),
+	(4, 4, 2, 45.000000, '2024-09-11', 2),
+	(5, 5, 1, 50.000000, '2024-09-12', 2);
+/*!40000 ALTER TABLE `compra` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.cupom_desconto
 DROP TABLE IF EXISTS `cupom_desconto`;
@@ -54,10 +72,22 @@ CREATE TABLE IF NOT EXISTS `cupom_desconto` (
   `VALIDADE` datetime DEFAULT NULL,
   `QUANT` int(11) DEFAULT NULL,
   `RESTANTES` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID_CUPOM`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `LKEVENTO` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID_CUPOM`),
+  KEY `FK_CUPOM_DESCONTO_EVENTO` (`LKEVENTO`),
+  CONSTRAINT `FK_CUPOM_DESCONTO_EVENTO` FOREIGN KEY (`LKEVENTO`) REFERENCES `evento` (`ID_EVENTO`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.cupom_desconto: ~6 rows (aproximadamente)
+DELETE FROM `cupom_desconto`;
+/*!40000 ALTER TABLE `cupom_desconto` DISABLE KEYS */;
+INSERT INTO `cupom_desconto` (`ID_CUPOM`, `CODIGO`, `DESCONTO`, `VALIDADE`, `QUANT`, `RESTANTES`, `LKEVENTO`) VALUES
+	(1, 'DESCONTO10', 10.0000, '2024-12-31 00:00:00', 100, 100, 1),
+	(2, 'DESCONTO20', 20.0000, '2024-12-31 00:00:00', 50, 50, 2),
+	(3, 'DESCONTO30', 30.0000, '2024-12-31 00:00:00', 30, 30, 1),
+	(4, 'DESCONTO40', 40.0000, '2024-12-31 00:00:00', 20, 20, 2),
+	(5, 'DESCONTO50', 50.0000, '2024-12-31 00:00:00', 10, 10, 1);
+/*!40000 ALTER TABLE `cupom_desconto` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.evento
 DROP TABLE IF EXISTS `evento`;
@@ -68,12 +98,23 @@ CREATE TABLE IF NOT EXISTS `evento` (
   `DATA_FIM` date DEFAULT NULL,
   `LOCAL` varchar(100) DEFAULT NULL,
   `DESCRICAO` varchar(100) DEFAULT NULL,
-  `LKORGANIZADOR` INT,
   `IMAGEM` longblob DEFAULT NULL,
-  PRIMARY KEY (`ID_EVENTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `LKORGANIZADOR` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID_EVENTO`),
+  KEY `FK_EVENTO_ORGANIZADORA` (`LKORGANIZADOR`),
+  CONSTRAINT `FK_EVENTO_ORGANIZADORA` FOREIGN KEY (`LKORGANIZADOR`) REFERENCES `organizador` (`ID_ORGANIZADOR`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.evento: ~2 rows (aproximadamente)
+DELETE FROM `evento`;
+/*!40000 ALTER TABLE `evento` DISABLE KEYS */;
+INSERT INTO `evento` (`ID_EVENTO`, `NOME`, `DATA_INICIO`, `DATA_FIM`, `LOCAL`, `DESCRICAO`, `IMAGEM`, `LKORGANIZADOR`) VALUES
+	(1, 'Evento 1', '2024-09-08', '2024-09-08', 'Local A', 'Descrição do Evento 1', NULL, 1),
+	(2, 'Evento 2', '2024-09-09', '2024-09-09', 'Local B', 'Descrição do Evento 2', NULL, 1),
+	(3, 'Evento 3', '2024-09-10', '2024-09-10', 'Local C', 'Descrição do Evento 3', NULL, 2),
+	(4, 'Evento 4', '2024-09-11', '2024-09-11', 'Local D', 'Descrição do Evento 4', NULL, 2),
+	(5, 'Evento 5', '2024-09-12', '2024-09-12', 'Local E', 'Descrição do Evento 5', NULL, 3);
+/*!40000 ALTER TABLE `evento` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.frm_pagamento
 DROP TABLE IF EXISTS `frm_pagamento`;
@@ -81,9 +122,15 @@ CREATE TABLE IF NOT EXISTS `frm_pagamento` (
   `ID_FRMPAGAMENTO` int(11) NOT NULL AUTO_INCREMENT,
   `DESCRICAO` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`ID_FRMPAGAMENTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.frm_pagamento: ~2 rows (aproximadamente)
+DELETE FROM `frm_pagamento`;
+/*!40000 ALTER TABLE `frm_pagamento` DISABLE KEYS */;
+INSERT INTO `frm_pagamento` (`ID_FRMPAGAMENTO`, `DESCRICAO`) VALUES
+	(1, 'Pix'),
+	(2, 'Boleto');
+/*!40000 ALTER TABLE `frm_pagamento` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.ingressos
 DROP TABLE IF EXISTS `ingressos`;
@@ -98,9 +145,18 @@ CREATE TABLE IF NOT EXISTS `ingressos` (
   KEY `FK_INGRESSOS_CATEGORIA` (`LKCATEGORIA`),
   CONSTRAINT `FK_INGRESSOS_CATEGORIA` FOREIGN KEY (`LKCATEGORIA`) REFERENCES `categorias` (`ID_CATEGORIA`),
   CONSTRAINT `FK_INGRESSOS_EVENTO` FOREIGN KEY (`LKEVENTO`) REFERENCES `evento` (`ID_EVENTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.ingressos: ~2 rows (aproximadamente)
+DELETE FROM `ingressos`;
+/*!40000 ALTER TABLE `ingressos` DISABLE KEYS */;
+INSERT INTO `ingressos` (`ID_INGRESSO`, `LKEVENTO`, `PRECO`, `LKCATEGORIA`, `QUANTIDADE`) VALUES
+	(1, 1, 20, 1, 100),
+	(2, 2, 25, 2, 50),
+	(3, 3, 30, 3, 75),
+	(4, 4, 35, 4, 60),
+	(5, 5, 40, 5, 80);
+/*!40000 ALTER TABLE `ingressos` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.organizador
 DROP TABLE IF EXISTS `organizador`;
@@ -113,9 +169,18 @@ CREATE TABLE IF NOT EXISTS `organizador` (
   PRIMARY KEY (`ID_ORGANIZADOR`),
   KEY `FK_ORGANIZADOR_USUARIO` (`LKUSUARIO`),
   CONSTRAINT `FK_ORGANIZADOR_USUARIO` FOREIGN KEY (`LKUSUARIO`) REFERENCES `usuario` (`ID_USUARIO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.organizador: ~4 rows (aproximadamente)
+DELETE FROM `organizador`;
+/*!40000 ALTER TABLE `organizador` DISABLE KEYS */;
+INSERT INTO `organizador` (`ID_ORGANIZADOR`, `NOME`, `CNPJ_EMPRESA`, `EMAIL`, `LKUSUARIO`) VALUES
+	(1, 'Organizador A', '12345678000195', 0, 1),
+	(2, 'Organizador B', '12345678000196', 0, 2),
+	(3, 'Organizador C', '12345678000197', 0, 3),
+	(4, 'Organizador D', '12345678000198', 0, 4),
+	(5, 'Organizador E', '12345678000199', 0, 5);
+/*!40000 ALTER TABLE `organizador` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.pagamentos
 DROP TABLE IF EXISTS `pagamentos`;
@@ -128,9 +193,18 @@ CREATE TABLE IF NOT EXISTS `pagamentos` (
   PRIMARY KEY (`ID_PAGAMENTO`),
   KEY `FK_PAGAMENTO_FRMPAGAMENTO` (`LKFRMPAGAMENTO`),
   CONSTRAINT `FK_PAGAMENTO_FRMPAGAMENTO` FOREIGN KEY (`LKFRMPAGAMENTO`) REFERENCES `frm_pagamento` (`ID_FRMPAGAMENTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.pagamentos: ~0 rows (aproximadamente)
+DELETE FROM `pagamentos`;
+/*!40000 ALTER TABLE `pagamentos` DISABLE KEYS */;
+INSERT INTO `pagamentos` (`ID_PAGAMENTO`, `ID_COMPRA`, `DATA_PAGAMENTO`, `VALOR`, `LKFRMPAGAMENTO`) VALUES
+	(1, 1, '2024-09-08', 40.000000, 1),
+	(2, 2, '2024-09-09', 30.000000, 2),
+	(3, 3, '2024-09-10', 60.000000, 3),
+	(4, 4, '2024-09-11', 45.000000, 4),
+	(5, 5, '2024-09-12', 50.000000, 5);
+/*!40000 ALTER TABLE `pagamentos` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.patrocinador
 DROP TABLE IF EXISTS `patrocinador`;
@@ -140,9 +214,18 @@ CREATE TABLE IF NOT EXISTS `patrocinador` (
   `EMPRESA` varchar(50) DEFAULT NULL,
   `VALOR_PATROCINADO` double(16,6) DEFAULT NULL,
   PRIMARY KEY (`ID_PATROCINADOR`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.patrocinador: ~0 rows (aproximadamente)
+DELETE FROM `patrocinador`;
+/*!40000 ALTER TABLE `patrocinador` DISABLE KEYS */;
+INSERT INTO `patrocinador` (`ID_PATROCINADOR`, `NOME`, `EMPRESA`, `VALOR_PATROCINADO`) VALUES
+	(1, 'Patrocinador 1', 'Empresa A', 10000.000000),
+	(2, 'Patrocinador 2', 'Empresa B', 15000.000000),
+	(3, 'Patrocinador 3', 'Empresa C', 20000.000000),
+	(4, 'Patrocinador 4', 'Empresa D', 25000.000000),
+	(5, 'Patrocinador 5', 'Empresa E', 30000.000000);
+/*!40000 ALTER TABLE `patrocinador` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela projetobd.usuario
 DROP TABLE IF EXISTS `usuario`;
@@ -151,14 +234,38 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `NOME` varchar(100) DEFAULT NULL,
   `EMAIL` varchar(50) DEFAULT NULL,
   `SENHA` char(10) DEFAULT NULL,
-  `TELEFONE` varchar(11) CHARACTER SET latin1 DEFAULT NULL,
+  `TELEFONE` varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `DATA_NASCIMENTO` date DEFAULT NULL,
   `TIPO` char(10) DEFAULT NULL,
-  `CPF_CNPJ` varchar(14) CHARACTER SET latin1 DEFAULT NULL COMMENT 'AGRUPADO CAMPO CPF_ E CGC_',
+  `CPF_CNPJ` varchar(14) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL COMMENT 'AGRUPADO CAMPO CPF_ E CGC_',
   PRIMARY KEY (`ID_USUARIO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
--- Exportação de dados foi desmarcado.
+-- Copiando dados para a tabela projetobd.usuario: ~7 rows (aproximadamente)
+DELETE FROM `usuario`;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` (`ID_USUARIO`, `NOME`, `EMAIL`, `SENHA`, `TELEFONE`, `DATA_NASCIMENTO`, `TIPO`, `CPF_CNPJ`) VALUES
+	(1, 'Usuário 1', 'usuario1@example.com', 'senha123', '(11) 11111-1111', '1990-01-01', 'cliente', '123.456.789-00'),
+	(2, 'Usuário 2', 'usuario2@example.com', 'senha123', '(11) 11111-1112', '1991-02-02', 'organizado', '123.456.789-01'),
+	(3, 'Usuário 3', 'usuario3@example.com', 'senha123', '(11) 11111-1113', '1992-03-03', 'cliente', '123.456.789-02'),
+	(4, 'Usuário 4', 'usuario4@example.com', 'senha123', '(11) 11111-1114', '1993-04-04', 'organizado', '123.456.789-03'),
+	(5, 'Usuário 5', 'usuario5@example.com', 'senha123', '(11) 11111-1115', '1994-05-05', 'cliente', '123.456.789-04');
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+
+-- Copiando estrutura para view projetobd.vw_relatorio
+DROP VIEW IF EXISTS `vw_relatorio`;
+-- Criando tabela temporária para evitar erros de dependência de VIEW
+CREATE TABLE `vw_relatorio` (
+	`id_evento` INT(11) NOT NULL,
+	`nome` VARCHAR(50) NULL COLLATE 'utf8_general_ci',
+	`data_inicio` DATE NULL,
+	`data_fim` DATE NULL,
+	`total` DOUBLE(23,6) NULL,
+	`nomecategoria` VARCHAR(50) NULL COLLATE 'utf8_general_ci',
+	`lkorganizador` INT(11) NULL,
+	`qtd` DECIMAL(32,0) NULL,
+	`preco` INT(11) NULL
+) ENGINE=MyISAM;
 
 -- Copiando estrutura para procedure projetobd.SP_CATEGORIASIA
 DROP PROCEDURE IF EXISTS `SP_CATEGORIASIA`;
@@ -230,12 +337,14 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `SP_CUPOM_DESCONTOIA`;
 DELIMITER //
 CREATE PROCEDURE `SP_CUPOM_DESCONTOIA`(
- IN PID_CUPOM INT,
- IN PCODIGO VARCHAR(15),
- IN PDESCONTO DOUBLE,
- IN PVALIDADE DATETIME,
- IN PQUANT INT,
- IN PRESTANTES INT)
+	IN `PID_CUPOM` INT,
+	IN `PCODIGO` VARCHAR(15),
+	IN `PDESCONTO` DOUBLE,
+	IN `PVALIDADE` DATETIME,
+	IN `PQUANT` INT,
+	IN `PRESTANTES` INT,
+	IN `PLKEVENTO` INT
+)
 BEGIN
   IF (PID_CUPOM = 0) THEN 
     INSERT INTO CUPOM_DESCONTO (
@@ -243,14 +352,16 @@ BEGIN
        DESCONTO,
        VALIDADE,
        QUANT,
-       RESTANTES)
+       RESTANTES,
+		 LKEVENTO)
 
     VALUES (
        PCODIGO,
        PDESCONTO,
        PVALIDADE,
        PQUANT,
-       PRESTANTES);
+       PRESTANTES,
+		 PLKEVENTO);
 
   ELSE
     UPDATE CUPOM_DESCONTO SET 
@@ -258,7 +369,8 @@ BEGIN
        DESCONTO = PDESCONTO,
        VALIDADE = PVALIDADE,
        QUANT = PQUANT,
-       RESTANTES = PRESTANTES
+       RESTANTES = PRESTANTES,
+       LKEVENTO = PLKEVENTO
 
     WHERE 
       ID_CUPOM = PID_CUPOM
@@ -271,14 +383,15 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `SP_EVENTOIA`;
 DELIMITER //
 CREATE PROCEDURE `SP_EVENTOIA`(
- IN PID_EVENTO INT,
- IN PNOME VARCHAR(50),
- IN PDATA_INICIO DATE,
- IN PDATA_FIM DATE,
- IN PLOCAL VARCHAR(100),
- IN PDESCRICAO VARCHAR(100),
- IN PLKORGANIZADOR INT,
- IN IMAGEM LONGBLOB)
+	IN `PID_EVENTO` INT,
+	IN `PNOME` VARCHAR(50),
+	IN `PDATA_INICIO` DATE,
+	IN `PDATA_FIM` DATE,
+	IN `PLOCAL` VARCHAR(100),
+	IN `PDESCRICAO` VARCHAR(100),
+	IN `PLKORGANIZADOR` INT,
+	IN `PIMAGEM` LONGBLOB
+)
 BEGIN
   IF (PID_EVENTO = 0) THEN 
     INSERT INTO EVENTO (
@@ -287,8 +400,8 @@ BEGIN
        DATA_FIM,
        LOCAL,
        DESCRICAO,
-       LKORGANIZADOR,
-       IMAGEM)
+		 LKORGANIZADOR,
+		 IMAGEM)
 
     VALUES (
        PNOME,
@@ -296,8 +409,8 @@ BEGIN
        PDATA_FIM,
        PLOCAL,
        PDESCRICAO,
-       PLKORGANIZADOR,
-       PIMAGEM);
+		 PLKORGANIZADOR,
+		 PIMAGEM);
 
   ELSE
     UPDATE EVENTO SET 
@@ -306,6 +419,7 @@ BEGIN
        DATA_FIM = PDATA_FIM,
        LOCAL = PLOCAL,
        DESCRICAO = PDESCRICAO,
+       lkorganizador = PLKORGANIZADOR,
        IMAGEM = PIMAGEM
 
     WHERE 
@@ -370,24 +484,25 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `SP_INGRESSOSIA`;
 DELIMITER //
 CREATE PROCEDURE `SP_INGRESSOSIA`(
- IN PID_INGRESSO INT,
- IN PLKEVENTO INT,
- IN PPRECO INT,
- IN PLKCATEGORIA INT,
- IN PQUANTIDADE INT)
+	IN `PID_INGRESSO` INT,
+	IN `PLKEVENTO` INT,
+	IN `PPRECO` INT,
+	IN `PLKCATEGORIA` INT,
+	IN `PQUANTIDADE` INT
+)
 BEGIN
   IF (PID_INGRESSO = 0) THEN 
     INSERT INTO INGRESSOS (
        LKEVENTO,
        PRECO,
        LKCATEGORIA,
-       QUANTIDADE)
+		 QUANTIDADE)
 
     VALUES (
        PLKEVENTO,
        PPRECO,
        PLKCATEGORIA,
-		   PQUANTIDADE);
+		 PQUANTIDADE);
 
   ELSE
     UPDATE INGRESSOS SET 
@@ -514,14 +629,15 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `SP_USUARIOIA`;
 DELIMITER //
 CREATE PROCEDURE `SP_USUARIOIA`(
- IN PID_USUARIO INT,
- IN PNOME VARCHAR(100),
- IN PEMAIL VARCHAR(50),
- IN PSENHA CHAR(10),
- IN PTELEFONE VARCHAR(11),
- IN PDATA_NASCIMENTO DATE,
- IN PTIPO CHAR(10),
- IN PCPF_CNPJ VARCHAR(14))
+	IN `PID_USUARIO` INT,
+	IN `PNOME` VARCHAR(100),
+	IN `PEMAIL` VARCHAR(50),
+	IN `PSENHA` CHAR(10),
+	IN `PTELEFONE` VARCHAR(16),
+	IN `PDATA_NASCIMENTO` DATE,
+	IN `PTIPO` CHAR(10),
+	IN `PCPF_CNPJ` VARCHAR(14)
+)
 BEGIN
   IF (PID_USUARIO = 0) THEN 
     INSERT INTO USUARIO (
@@ -558,6 +674,27 @@ BEGIN
   END IF;
 END//
 DELIMITER ;
+
+-- Copiando estrutura para view projetobd.vw_relatorio
+DROP VIEW IF EXISTS `vw_relatorio`;
+-- Removendo tabela temporária e criando a estrutura VIEW final
+DROP TABLE IF EXISTS `vw_relatorio`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_relatorio` AS SELECT e.ID_EVENTO AS id_evento, 
+       e.NOME AS nome, 
+		 e.DATA_INICIO AS data_inicio, 
+		 e.DATA_FIM AS data_fim, 
+		 sum(c.VALOR_TOTAL) AS total, 
+		 cat.NOME AS nomecategoria,
+		  e.LKORGANIZADOR AS lkorganizador,
+		  SUM(c.QUANT) AS qtd, 
+		  i.PRECO AS preco
+ FROM evento AS e
+ INNER JOIN ingressos AS i ON i.LKEVENTO = e.ID_EVENTO
+ LEFT JOIN compra AS c ON c.LKINGRESSO = i.ID_INGRESSO 
+ INNER JOIN usuario AS u ON u.ID_USUARIO = e.LKORGANIZADOR
+ INNER JOIN organizador AS o ON o.ID_ORGANIZADOR = u.ID_USUARIO
+ left JOIN categorias AS cat ON cat.ID_CATEGORIA = i.LKCATEGORIA
+GROUP BY e.ID_EVENTO ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
