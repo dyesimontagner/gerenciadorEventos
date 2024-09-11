@@ -91,9 +91,9 @@
             }
         }
 
-        function carregarCupom(idCupom) {
+        function carregarCupom(idEvento) {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "carregarCupom.php?id_cupom=" + idCupom, true);
+            xhr.open("GET", "carregarCupom.php?id_evento=" + idEvento, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var cupom = JSON.parse(xhr.responseText);
@@ -102,22 +102,29 @@
                         document.getElementById('id_cupom').value = cupom.ID_CUPOM;
                         document.getElementById('codigo').value = cupom.CODIGO;
                         document.getElementById('desconto').value = cupom.DESCONTO;
-                        document.getElementById('validade').value = cupom.VALIDADE;
-                        document.getElementById('quant').value = cupom.QUANTIDADE;
+                        var validade = new Date(cupom.VALIDADE);
+                        var validadeFormatada = validade.toISOString().split('T')[0];
+                        document.getElementById('validade').value = validadeFormatada;
                         document.getElementById('restantes').innerText = cupom.RESTANTES; 
                     } else {
-                        alert("Erro ao carregar os dados do cupom.");
+                        //aqui ele vai cadastrar um cupom pra aquiele evento
                     }
                 }
             };
             xhr.send();
         }
 
-        // Carregar cupom ao carregar a página
-        window.onload = function() {
-            var idCupom = 1; // Substitua isso pelo ID dinâmico que você quiser carregar
-            carregarCupom(idCupom);
+        function getQueryParam(param) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
         }
+        
+        window.onload = function() {
+            var idEvento = getQueryParam('id_evento');
+            if (idEvento) {
+                carregarCupom(idEvento);
+            }
+        };
     </script>
 </head>
 <body>
@@ -129,12 +136,12 @@
 
             <div class="form-group">
                 <label for="codigo">Código do Cupom:</label>
-                <input type="text" id="codigo" name="codigo" value="" disabled>
+                <input type="text" id="codigo" name="codigo" value="">
             </div>
 
             <div class="form-group">
                 <label for="desconto">Desconto (%):</label>
-                <input type="number" id="desconto" name="desconto" value="" min="0" max="100" disabled>
+                <input type="number" id="desconto" name="desconto" value="" min="0" max="100" >
             </div>
 
             <div class="form-group">
@@ -152,13 +159,12 @@
                 <input type="number" id="retirar" name="retirar">
             </div>
 
-            <!-- Exibir quantidade de cupons restantes -->
             <div class="info-restantes">
                 Cupons Restantes: <span id="restantes"></span>
             </div>
 
             <div class="button-group">
-                <button type="submit">Atualizar Cupom</button>
+                <button type="submit">Salvar Cupom</button>
                 <button type="button" onclick="descontinuarCupom(document.getElementById('id_cupom').value)">Descontinuar Cupom</button>
             </div>
         </form>

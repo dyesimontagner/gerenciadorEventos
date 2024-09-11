@@ -23,7 +23,7 @@ if (isset($_GET['id_evento'])) {
     } else {
         echo json_encode(null); // Erro na preparação da query
     }
-
+exit();
     $conexao->close();
 } else {
     echo json_encode(null); // ID não fornecido
