@@ -30,11 +30,14 @@ if ($result->num_rows > 0) {
     exit();
 }
 
-// Obtém as compras do usuário
+// Obtém as compras do usuário com informações do evento e categoria
 $sql_compras = "
-    SELECT *
-    FROM compra
-    WHERE LKUSUARIO = ?
+    SELECT c.ID_COMPRA, e.NOME AS nome_evento, e.IMAGEM AS imagem_evento, cat.NOME AS categoria, c.VALOR_TOTAL, c.DATA_COMPRA, c.QUANT
+    FROM compra c
+    INNER JOIN ingressos i ON i.ID_INGRESSO = c.LKINGRESSO
+    INNER JOIN evento e ON e.ID_EVENTO = i.LKEVENTO
+    INNER JOIN categorias cat ON i.LKCATEGORIA = cat.ID_CATEGORIA
+    WHERE c.LKUSUARIO = ?
 ";
 $stmt_compras = $conexao->prepare($sql_compras);
 $stmt_compras->bind_param('i', $user_id);
@@ -73,7 +76,6 @@ $conexao->close();
             <p><strong>CPF:</strong> <?php echo htmlspecialchars($user['CPF_CNPJ']); ?></p>
         </div>
 
-        <!-- Botões de Editar e Excluir -->
         <div class="user-actions">
             <form action="ExcluirUsuario.php" method="post">
                 <button type="button" onclick="window.location.href='CampoEditar.php'">Editar Informações</button>
@@ -81,34 +83,28 @@ $conexao->close();
             </form>
         </div>
 
-        <!-- Compras Recentes -->
         <div class="user-purchases">
             <h3>Compras Recentes</h3>
             <table>
                 <thead>
                     <tr>
-                        <!-- Ajuste os cabeçalhos de acordo com as colunas da sua tabela compras -->
-                        <th>ID</th>
-                        <th>ID Usuário</th>
-                        <th>ID Ingresso</th>
-                        <th>Valor</th>
-                        <th>Total</th>
+                        <th>Imagem do Evento</th>
+                        <th>Nome do Evento</th>
+                        <th>Categoria</th>
+                        <th>Valor Total</th>
                         <th>Data da Compra</th>
                         <th>Quantidade</th>
-                        <!-- Adicione outras colunas conforme necessário -->
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($compra = $compras_result->fetch_assoc()) { ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($compra['id']); ?></td>
-                            <td><?php echo htmlspecialchars($compra['id_usuario']); ?></td>
-                            <td><?php echo htmlspecialchars($compra['id_ingresso']); ?></td>
-                            <td><?php echo htmlspecialchars(number_format($compra['valor'], 2, ',', '.')); ?></td>
-                            <td><?php echo htmlspecialchars(number_format($compra['total'], 2, ',', '.')); ?></td>
-                            <td><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($compra['data_compra']))); ?></td>
-                            <td><?php echo htmlspecialchars($compra['quantidade']); ?></td>
-                            <!-- Adicione outras colunas conforme necessário -->
+                            <td><?php echo "<img src='data:image/jpeg;base64," . base64_encode($compra['imagem_evento']) . "' alt='Imagem do evento' class='event-img'>";?></td>
+                            <td><?php echo htmlspecialchars($compra['nome_evento']); ?></td>
+                            <td><?php echo htmlspecialchars($compra['categoria']); ?></td>
+                            <td><?php echo htmlspecialchars(number_format($compra['VALOR_TOTAL'], 2, ',', '.')); ?></td>
+                            <td><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($compra['DATA_COMPRA']))); ?></td>
+                            <td><?php echo htmlspecialchars($compra['QUANT']); ?></td>
                         </tr>
                     <?php } ?>
                 </tbody>
