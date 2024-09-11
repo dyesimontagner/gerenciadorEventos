@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Exibe uma mensagem de sucesso e redireciona com JavaScript
     echo "<script>
         alert('Alteração realizada com sucesso!');
-        window.location.href = '" . ($user['TIPO'] === 'organizador' ? 'PerfilOrga.php' : 'PerfilUsu.php') . "';
+        window.location.href = '" . ($user['TIPO'] === 'organizado' ? 'PerfilOrga.php' : 'PerfilUsu.php') . "';
     </script>";
 
     exit();
