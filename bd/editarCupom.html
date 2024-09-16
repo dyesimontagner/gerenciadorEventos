@@ -106,6 +106,8 @@
                         var validadeFormatada = validade.toISOString().split('T')[0];
                         document.getElementById('validade').value = validadeFormatada;
                         document.getElementById('restantes').innerText = cupom.RESTANTES; 
+                        document.getElementById('id_evento').innerText = idEvento; 
+
                     } else {
                         //aqui ele vai cadastrar um cupom pra aquiele evento
                     }
@@ -133,7 +135,7 @@
         <form action="processaCupom.php" method="POST">
             <!-- Campo oculto para o ID do cupom -->
             <input type="hidden" id="id_cupom" name="id_cupom">
-
+            <input type="hidden" id="id_evento" name="id_evento">
             <div class="form-group">
                 <label for="codigo">Código do Cupom:</label>
                 <input type="text" id="codigo" name="codigo" value="">

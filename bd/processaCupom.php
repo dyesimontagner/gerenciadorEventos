@@ -11,6 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $validade = isset($_POST['validade']) ? $_POST['validade'] : null;
     $quant = isset($_POST['quant']) ? (int)$_POST['quant'] : 0;
     $retirar = isset($_POST['retirar']) ? (int)$_POST['retirar'] : 0;
+    $id_evento = isset($_POST['id_evento']) ? (int)$_POST['id_evento'] : 0;
+
 
     if ($codigo && $desconto !== null && $validade) {
         if (!empty($id_cupom) && $id_cupom !== null) {
@@ -29,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $novos_restantes = max($novos_restantes, 0); // Garante que não fique negativo
 
                 // Atualiza o cupom no banco de dados
-                $query = "UPDATE cupom_desconto SET CODIGO = ?, DESCONTO = ?, VALIDADE = ?, QUANT = ?, RESTANTES = ? WHERE ID_CUPOM = ?";
+                $query = "UPDATE cupom_desconto SET CODIGO = ?, DESCONTO = ?, VALIDADE = ?, QUANT = ?, RESTANTES = ?, lkevento = ? WHERE ID_CUPOM = ?";
                 $stmt = $conexao->prepare($query);
-                $stmt->bind_param('sisiii', $codigo, $desconto, $validade, $quant, $novos_restantes, $id_cupom);
+                $stmt->bind_param('sisiii', $codigo, $desconto, $validade, $quant, $novos_restantes, $id_evento);
 
                 if ($stmt->execute()) {
                     $mensagem = 'Cupom atualizado com sucesso!';
@@ -43,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // Insere um novo cupom
-            $query = "INSERT INTO cupom_desconto (CODIGO, DESCONTO, VALIDADE, QUANT, RESTANTES) VALUES (?, ?, ?, ?, ?)";
+            $query = "INSERT INTO cupom_desconto (CODIGO, DESCONTO, VALIDADE, QUANT, RESTANTES, LKEVENTO) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conexao->prepare($query);
-            $stmt->bind_param('sisii', $codigo, $desconto, $validade, $quant, $quant);
+            $stmt->bind_param('sisiii', $codigo, $desconto, $validade, $quant, $quant, $id_evento);
 
             if ($stmt->execute()) {
                 $mensagem = 'Novo cupom cadastrado com sucesso!';
@@ -58,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Redireciona com uma mensagem de sucesso ou erro
-    header("Location: http://localhost/gerEventos/bd/PerfilOrga.php?mensagem=" . urlencode($mensagem));
+    header("Location: http://localhost/gerenciadorEventos/bd/PerfilOrga.php?mensagem=" . urlencode($mensagem));
     exit();
 }
 
